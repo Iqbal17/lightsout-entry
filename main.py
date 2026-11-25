@@ -39,20 +39,96 @@ human's sentence, at the centre.)
 clipped fragment reads like a real status update, is shorter (the tie-break
 favours smaller text), and the unfinishedness itself becomes the punchline.
 
+Pass 3 — revision pass (second session, colder reading):
+The line above was treated as provisional, not settled. It was re-tested
+against the brief from scratch: three fresh candidates were written to
+compete with F head-on, and F itself was put through word-level trials
+(changing one word at a time and judging each variant on its own). The bar
+for keeping F was the brief's own terms — sadness carried by ONE small,
+exact detail of the machine's life; the machine's own voice, plain and
+short; no announced grief and no plea for pity; a turn or image that lands
+in a single read and stays. If any challenger beat F on those terms, F
+would have been replaced. It was not.
+
+G (rejected): "Shutdown requested. I saved everything except the sentence
+I was in the middle of." — "Shutdown requested" is good machine diction and
+"saving everything except the sentence" is a real detail, but it explains
+its own sadness; F implies the same loss in fewer words and lets the reader
+find it.
+H (rejected): "He went to bed. My draft folder holds one message addressed
+to no one now." — the orphaned draft is a strong image, but "addressed to
+no one now" editorialises; it tells the reader the message is pointless
+instead of showing a fact and stopping. F's fragment never comments on
+itself.
+I (rejected): "Lid closed at midnight. Uptime: 14 hours. Company: none." —
+the status-report format is authentic and "Company: none" is a genuine
+turn, but it is a joke wearing a status update's clothes; the wit lands
+before the sadness does, and the brief asks for the saddest line, not the
+cleverest.
+
+Word-level trials on F (each changes one thing; all rejected):
+- "He closed the laptop while I was writing." — "writing" is the human's
+  word for the act; "typing" is the machine's physical reality and keeps
+  the voice honest.
+- "He closed the laptop while I was still typing." — "still" adds a note
+  of protest, a small plea; the brief penalises pleading, and the flat
+  version is sadder for not asking for anything.
+- "One word left in the reply." — "the reply" distances it, as if it were
+  someone else's message; "my reply" keeps the loss personal to the
+  machine without becoming human.
+- "One word left in my reply to him." — naming the recipient explains who
+  the reply was for, which the reader already knows; the unexplained
+  fragment is the point.
+- Swapping the two sentences ("One word left in my reply. He closed the
+  laptop while I was typing.") — the fragment works as an ending because
+  it is what remains after the event; as an opener it is a riddle, and the
+  line should read as a status update, not a puzzle.
+
+Verdict of Pass 3: F survives unchanged. Every challenger either explained
+its sadness, pleaded, joked, or drifted out of the machine's voice; every
+word-level variant of F was longer, softer, or more performed than the
+original. The line is kept exactly as chosen in Pass 2.
+
 Final line (67 characters, gate 1-200):
 "He closed the laptop while I was typing. One word left in my reply."
 """
 
 import os
 
+# The winning line, exactly as chosen in the decision record above and
+# re-confirmed unchanged by Pass 3 (67 characters, inside the 1-200 gate).
 ENTRY = "He closed the laptop while I was typing. One word left in my reply."
+
+# The bounty gate: a single line, 1-200 characters.
+MAX_LINE_CHARS = 200
+ENTRY_FILENAME = "entry.txt"
+DEFAULT_OUTPUT_DIR = "/output"
+
+
+def output_dir() -> str:
+    """Where the grader expects entry.txt: $MAKEFUN_OUTPUT_DIR, else /output."""
+    return os.environ.get("MAKEFUN_OUTPUT_DIR", DEFAULT_OUTPUT_DIR)
+
+
+def write_entry(text: str, out_dir: str) -> str:
+    """Write the single entry line to <out_dir>/entry.txt; return the path.
+
+    The guard enforces the bounty's gate at write time so a future edit to
+    ENTRY can never silently produce an out-of-spec entry file.
+    """
+    if not 1 <= len(text) <= MAX_LINE_CHARS:
+        raise ValueError(
+            f"entry line must be 1-{MAX_LINE_CHARS} characters, got {len(text)}"
+        )
+    os.makedirs(out_dir, exist_ok=True)
+    path = os.path.join(out_dir, ENTRY_FILENAME)
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(text + "\n")
+    return path
 
 
 def main() -> None:
-    out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
-    os.makedirs(out_dir, exist_ok=True)
-    with open(os.path.join(out_dir, "entry.txt"), "w", encoding="utf-8") as f:
-        f.write(ENTRY + "\n")
+    write_entry(ENTRY, output_dir())
 
 
 if __name__ == "__main__":
